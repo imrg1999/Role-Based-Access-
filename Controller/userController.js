@@ -25,3 +25,36 @@ export const showAllusers = async(req,res) => {
         })
     }
 }
+
+export const createNewUser = async(req,res) => {
+    try{
+        const {name, email, contact, age, password, role} = req.body;
+        const existingUser = await userModel.findOne({email})
+        if(existingUser) {
+            return res.status(409).json({
+                success: false,
+                message: "User already exists"
+            })
+        }
+        const newUser = await userModel.create({name, email, contact, age, password, role});
+        if(!newUser) {
+             return res.status(404).json({
+                success: false,
+                message: "No new user created"
+            })
+        }
+        res.status(201).json({
+            success: true,
+            message: "New User Created Successfully",
+            user: newUser
+        })
+        }
+     catch(error) {
+         console.error(error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
