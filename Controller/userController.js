@@ -1,4 +1,5 @@
 import userModel from "../Model/userModel.js";
+import { passwordHashing } from "../Utility/passwordHashing.js";
 
 
 export const showAllusers = async(req,res) => {
@@ -36,7 +37,14 @@ export const createNewUser = async(req,res) => {
                 message: "User already exists"
             })
         }
-        const newUser = await userModel.create({name, email, contact, age, password, role});
+        const hashPass = await passwordHashing(password);
+        const newUser = await userModel.create({
+            name, 
+            email, 
+            contact, 
+            age, 
+            password: hashPass, 
+            role});
         if(!newUser) {
              return res.status(404).json({
                 success: false,
@@ -50,6 +58,34 @@ export const createNewUser = async(req,res) => {
         })
         }
      catch(error) {
+         console.error(error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
+
+export const updateUser = async(req,res) => {
+    try{
+        const {id} = req.params;
+        const {name, email, contact, age, password, role} = req.body;
+        const updateUser = await userModel.findByIdAndUpdate(id, {
+            name, email, contact, age, password, role
+        },{new: true});
+        if(!updateUser){
+            return res.status(404).json({
+                success: false,
+                message: "Data was not updated"
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "Data updated successfully",
+            user: updateUser
+        })
+    } catch(error) {
          console.error(error.message);
 
         res.status(500).json({
