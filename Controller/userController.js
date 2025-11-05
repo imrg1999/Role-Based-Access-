@@ -71,20 +71,29 @@ export const updateUser = async(req,res) => {
     try{
         const {id} = req.params;
         const {name, email, contact, age, password, role} = req.body;
-        const updateUser = await userModel.findByIdAndUpdate(id, {
-            name, email, contact, age, password, role
-        },{new: true});
-        if(!updateUser){
-            return res.status(404).json({
-                success: false,
-                message: "Data was not updated"
-            })
-        }
-        res.status(200).json({
-            success: true,
-            message: "Data updated successfully",
-            user: updateUser
+       const updates = {...req.body};
+       if(Object.keys(updates).length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "No data to update"
         })
+       }
+       if(updates.password) {
+        updates.password = await passwordHashing(updates.password)
+       }
+const updatedData = await userModel.findByIdAndUpdate(id,
+updates, {new: true}) 
+       if(!updatedData) {
+        return res.status(404).json({
+            success: false,
+            message: "User data was not updated"
+        })
+       }
+       res.status(200).json({
+        success: true,
+        message: "User data updated successfully",
+        user: updatedData
+       })
     } catch(error) {
          console.error(error.message);
 
