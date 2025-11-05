@@ -103,3 +103,27 @@ updates, {new: true})
         })
     }
 }
+
+export const deleteUser = async(req,res) => {
+    try{
+        const {id} = req.params;
+        const deleteOne = await userModel.findByIdAndDelete(id);
+        if(!deleteOne) {
+            return res.status(404).json({
+                success: false,
+                message: "User could not be deleted"
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "User deleted successfully"
+        })
+    } catch(error) {
+         console.error(error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
