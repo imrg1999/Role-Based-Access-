@@ -1,5 +1,6 @@
 import express from 'express';
 import { connectDB } from './Config/connectDB.js';
+import roleRoutes from './Route/roleRoutes.js'
 import userRoutes from './Route/userRoutes.js';
 import authRoutes from './Route/authRoutes.js';
 
@@ -13,6 +14,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.use('/app',userRoutes);
 app.use('/auth',authRoutes);
+app.use('/role',roleRoutes);
 
 app.get('/',(req,res) => {
     res.status(200).json({

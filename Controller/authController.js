@@ -78,3 +78,27 @@ export const logInUser = async(req,res) => {
      })
     }
 }
+
+export const adminAccess = async(req,res) => {
+    try{
+        const admin = await userModel.findById(req.user.id).select("-password");
+        if(!admin) {
+        return res.status(400).json({
+                success: false,
+                message: "Invalid Credentials"
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "Log in Successful",
+            data: admin
+        })
+    }catch(error) {
+        console.error(error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
